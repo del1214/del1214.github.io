@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="docker-compose我曾经跨过山河大海、也穿过人山人海！！看过了前面那么多知识概念，自己的docker镜像终于跑起来了。但总感觉少了点什么，那就是老敲命令太tm烦了。尤其是container每次还的先删掉才能重新启动。docker run那么多参数哥真的记不住啊。一个项目要依赖很多服务，又要部署超多实例，没有带给我们丝毫的便利。于是有人来拯救我们了！ 使用docker-compose可以轻">
+<meta name="keywords" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker-compose">
+<meta property="og:url" content="http://yoursite.com/2019/06/18/docker-compose/index.html">
+<meta property="og:site_name" content="德聚全的部落格">
+<meta property="og:description" content="docker-compose我曾经跨过山河大海、也穿过人山人海！！看过了前面那么多知识概念，自己的docker镜像终于跑起来了。但总感觉少了点什么，那就是老敲命令太tm烦了。尤其是container每次还的先删掉才能重新启动。docker run那么多参数哥真的记不住啊。一个项目要依赖很多服务，又要部署超多实例，没有带给我们丝毫的便利。于是有人来拯救我们了！ 使用docker-compose可以轻">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-09T06:34:38.816Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="docker-compose">
+<meta name="twitter:description" content="docker-compose我曾经跨过山河大海、也穿过人山人海！！看过了前面那么多知识概念，自己的docker镜像终于跑起来了。但总感觉少了点什么，那就是老敲命令太tm烦了。尤其是container每次还的先删掉才能重新启动。docker run那么多参数哥真的记不住啊。一个项目要依赖很多服务，又要部署超多实例，没有带给我们丝毫的便利。于是有人来拯救我们了！ 使用docker-compose可以轻">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/18/docker-compose/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>docker-compose | 德聚全的部落格</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">德聚全的部落格</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">随便写一些开发的经验和生活的感悟</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/18/docker-compose/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="德巍">
+      <meta itemprop="description" content="时间是把杀猪刀">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="德聚全的部落格">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">docker-compose
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-18 16:29:18" itemprop="dateCreated datePublished" datetime="2019-06-18T16:29:18+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-09 14:34:38" itemprop="dateModified" datetime="2020-09-09T14:34:38+08:00">2020-09-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="docker-compose"><a href="#docker-compose" class="headerlink" title="docker-compose"></a>docker-compose</h2><p>我曾经跨过山河大海、也穿过人山人海！！看过了前面那么多知识概念，自己的docker镜像终于跑起来了。但总感觉少了点什么，那就是老敲命令太tm烦了。尤其是container每次还的先删掉才能重新启动。<code>docker run</code>那么多参数哥真的记不住啊。一个项目要依赖很多服务，又要部署超多实例，没有带给我们丝毫的便利。于是有人来拯救我们了！</p>
+<p>使用docker-compose可以轻松、高效的管理容器，它是一个定义和运行多容器Docker应用的工具。使用YAML文件来配置应用服务，只需要一行命令就可以创建运行配置的服务。</p>
+<h3 id="Compose文件"><a href="#Compose文件" class="headerlink" title="Compose文件"></a>Compose文件</h3><p>docker-compose主要围绕compose文件定义工作,从发布到目前一共有下面这些版本</p>
+<table><br>  <thead><br>    <tr><br>      <th><strong>Compose文件版本</strong></th><br>      <th><strong>Docker Engine版本需求</strong></th><br>    </tr><br>  </thead><br>  <tbody><br>    <tr><br>      <td>3.7</td><br>      <td>18.06.0+</td><br>    </tr><br>    <tr><br>      <td>3.6</td><br>      <td>18.02.0+</td><br>    </tr><br>    <tr><br>      <td>3.5</td><br>      <td>17.12.0+</td><br>    </tr><br>    <tr><br>      <td>3.4</td><br>      <td>17.09.0+</td><br>    </tr><br>    <tr><br>      <td>3.3</td><br>      <td>17.06.0+</td><br>    </tr><br>    <tr><br>      <td>3.2</td><br>      <td>17.04.0+</td><br>    </tr><br>    <tr><br>      <td>3.1</td><br>      <td>1.13.1+</td><br>    </tr><br>    <tr><br>      <td>3.0</td><br>      <td>1.13.0+</td><br>    </tr><br>    <tr><br>      <td>2.4</td><br>      <td>17.12.0+</td><br>    </tr><br>    <tr><br>      <td>2.3</td><br>      <td>17.06.0+</td><br>    </tr><br>    <tr><br>      <td>2.2</td><br>      <td>1.13.0+</td><br>    </tr><br>    <tr><br>      <td>2.1</td><br>      <td>1.12.0+</td><br>    </tr><br>    <tr><br>      <td>2.0</td><br>      <td>1.10.0+</td><br>    </tr><br>    <tr><br>      <td>1.0</td><br>      <td>1.9.1.+</td><br>    </tr><br>  </tbody><br></table>
+
+<p>不同版本的Compose文件格式要求不同的Docker Engine和docker-compose版本。之前就发生过Compose文件版本过高，docker-compose版本过低无法运行的窘境</p>
+<h4 id="Compose文件版本选择"><a href="#Compose文件版本选择" class="headerlink" title="Compose文件版本选择"></a>Compose文件版本选择</h4><blockquote>
+<p>可以使用最新的。也可以按阿里云一类的要求用对应版本的格式</p>
+</blockquote>
+<h3 id="Compose文件的编写"><a href="#Compose文件的编写" class="headerlink" title="Compose文件的编写"></a>Compose文件的编写</h3><p>Compose文件使用<code>YAML</code>格式编写，这个格式在python,ruby等语言中比较流行</p>
+<p>让我们来看看大搜车easy-mock服务的<code>Compose</code>文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 声明版本</span></span><br><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># service配置 - 固定格式</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="comment"># 服务名称-叫什么都行，自己起名字</span></span><br><span class="line"><span class="attr">  mongodb:</span></span><br><span class="line">    <span class="comment"># 依赖镜像</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">mongo:3.4</span></span><br><span class="line">    <span class="comment"># 数据卷配置</span></span><br><span class="line">    <span class="comment"># 将容器/data/db目录映射到宿主机上下文的./data/db目录，这个目录在宿主机可能会有权限问题，一般需提前创建好并chown 555 -R ./data/db解决.也可以配置service的privileged: true解决,但使用了这个文件夹权限会是root级别</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">'./data/db:/data/db'</span></span><br><span class="line">    <span class="comment"># 配置网络</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line">      <span class="comment"># 容器可以发现easy-mock网络</span></span><br><span class="line"><span class="attr">      easy-mock:</span></span><br><span class="line">        <span class="comment"># 配置容器网络别名</span></span><br><span class="line"><span class="attr">        aliases:</span></span><br><span class="line">          <span class="comment"># webapp可以通过hostname mongodb来找到这台服务器,数据库链接字符串变成了mongodb://mongodb/easy-mock</span></span><br><span class="line"><span class="bullet">          -</span> <span class="string">mongodb</span></span><br><span class="line">    <span class="comment"># swarm 模式失效</span></span><br><span class="line">    <span class="comment"># 一直重启</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="comment"># swarm 模式生效</span></span><br><span class="line"><span class="attr">    deploy:</span></span><br><span class="line">      <span class="comment"># 实例个数 1，webserver可以配多个</span></span><br><span class="line"><span class="attr">      replicas:</span> <span class="number">1</span></span><br><span class="line">      <span class="comment"># 资源配置</span></span><br><span class="line"><span class="attr">      resources:</span></span><br><span class="line">        <span class="comment"># 固定格式</span></span><br><span class="line"><span class="attr">        limits:</span></span><br><span class="line">          <span class="comment"># cpu单核的20%处理能力</span></span><br><span class="line"><span class="attr">          cpus:</span> <span class="string">".2"</span></span><br><span class="line">          <span class="comment"># 不能超过50兆内存</span></span><br><span class="line"><span class="attr">          memory:</span> <span class="number">50</span><span class="string">M</span></span><br><span class="line"><span class="attr">  redis:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">redis:4.0.6</span></span><br><span class="line">    <span class="comment"># 替换掉Dockerfile中的CMD指令</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">redis-server</span> <span class="bullet">--appendonly</span> <span class="literal">yes</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">'./data/redis:/data'</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line"><span class="attr">      easy-mock:</span></span><br><span class="line">        <span class="comment"># 其他同一网络下的可用 host redis来访问</span></span><br><span class="line"><span class="attr">        aliases:</span></span><br><span class="line"><span class="bullet">          -</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    deploy:</span></span><br><span class="line"><span class="attr">      replicas:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      resources:</span></span><br><span class="line"><span class="attr">        limits:</span></span><br><span class="line"><span class="attr">          cpus:</span> <span class="string">"0.3"</span></span><br><span class="line"><span class="attr">          memory:</span> <span class="number">50</span><span class="string">M</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  web:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">easymock/easymock:1.6.0</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">/bin/bash</span> <span class="bullet">-c</span> <span class="string">"npm start"</span></span><br><span class="line">    <span class="comment"># 将容器的7300端口映射到宿主机7300端口</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">7300</span><span class="string">:7300</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line">      <span class="comment"># 日志地址</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">'./logs:/home/easy-mock/easy-mock/logs'</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">easy-mock</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    deploy:</span></span><br><span class="line"><span class="attr">      replicas:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      resources:</span></span><br><span class="line"><span class="attr">        limits:</span></span><br><span class="line"><span class="attr">          cpus:</span> <span class="string">"0.5"</span></span><br><span class="line"><span class="attr">          memory:</span> <span class="number">200</span><span class="string">M</span></span><br><span class="line"><span class="comment"># network配置</span></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="comment"># 创建名叫easy-mock的network</span></span><br><span class="line"><span class="attr">  easy-mock:</span></span><br></pre></td></tr></table></figure>
+<h3 id="编译自己的Dockerfile"><a href="#编译自己的Dockerfile" class="headerlink" title="编译自己的Dockerfile"></a>编译自己的Dockerfile</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  webapp:</span></span><br><span class="line">    <span class="comment"># 赋予volume权限</span></span><br><span class="line"><span class="attr">    privileged:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment"># 编译本地的Dockerfile，文件名默认是Dockerfile</span></span><br><span class="line"><span class="attr">    build:</span> <span class="string">.</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"8888:3000"</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line">      <span class="comment"># 下面这个有个大坑就是会让自己Dockerfile的COPY到WORKDIR的内容全部消失，😂</span></span><br><span class="line">      <span class="comment"># - ./:/code  加入这个会让dockerfile npm i 产生的 node_modules消失</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./logs:/code/logs</span></span><br></pre></td></tr></table></figure>
+<h3 id="详细的配置"><a href="#详细的配置" class="headerlink" title="详细的配置"></a><a href="https://docs.docker.com/compose/compose-file/" target="_blank" rel="noopener">详细的配置</a></h3><h3 id="使用环境变量"><a href="#使用环境变量" class="headerlink" title="使用环境变量"></a>使用环境变量</h3><p>假设有文件 dev.sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> NODE_RUN=dev</span><br><span class="line"><span class="built_in">export</span> NGINX_PORT=8089</span><br><span class="line"><span class="built_in">export</span> COMPOSE_PROJECT_NAME=oil_mall_admhtml_dev</span><br></pre></td></tr></table></figure>
+<p>在配置文件中${variable_name}引用</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  webapp:</span></span><br><span class="line"><span class="attr">    build:</span> <span class="string">.</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./dist:/code/dist</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">NODE_RUN</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">$&#123;NGINX_PORT&#125;:80</span></span><br></pre></td></tr></table></figure>
+<p>使用方法</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> dev.sh</span><br><span class="line">docker-compose config</span><br></pre></td></tr></table></figure>
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a><strong><em>启动</em></strong></h4><p>创建启动container</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f docker-compose.yml up -d --build</span><br><span class="line"><span class="comment"># 重要参数</span></span><br><span class="line">    <span class="comment"># -d, --detach               后台运行</span></span><br><span class="line">    <span class="comment"># --build                    开启容器前始终编译镜像</span></span><br></pre></td></tr></table></figure>
+<h4 id="停止"><a href="#停止" class="headerlink" title="停止"></a><strong><em>停止</em></strong></h4><p>停止并删除container,networks,images,volumes</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f <span class="string">"docker-compose.yml"</span> down</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重要参数</span></span><br><span class="line">  <span class="comment"># -v, --volumes               删除volumes</span></span><br><span class="line">    <span class="comment"># --rmi type                删除镜像,all|local 全部或本地未加标签的镜像</span></span><br></pre></td></tr></table></figure>
+<h4 id="检查单个容器环境"><a href="#检查单个容器环境" class="headerlink" title="检查单个容器环境"></a>检查单个容器环境</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose run web env</span><br></pre></td></tr></table></figure>
+<p><strong><em>单独的docker-compose只用于开发测试<br>配合 docker swarm 和 docker stack就是用于部署</em></strong></p>
+<h3 id="疑难配置详解"><a href="#疑难配置详解" class="headerlink" title="疑难配置详解"></a>疑难配置详解</h3><h4 id="command-和-entrypoint"><a href="#command-和-entrypoint" class="headerlink" title="command 和 entrypoint"></a>command 和 entrypoint</h4><p><strong><em>command 和 entrypoint 最后必须能产生一个不退出进程的PID</em></strong></p>
+<blockquote>
+<p>command 和 entrypoint 指令会替换镜像 Dockerfile 中最后的 CMD 或 ENTRYPOINT 如果不太熟悉官方镜像尽量只传参数不要自己写命令</p>
+</blockquote>
+<h5 id="多行书写"><a href="#多行书写" class="headerlink" title="多行书写"></a>多行书写</h5><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">  command:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">/bin/sh</span></span><br><span class="line"><span class="bullet">    -</span> <span class="bullet">-c</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">|</span></span><br><span class="line"><span class="string">        bundle config mirror.https://rubygems.org https://gems.ruby-china.org</span></span><br><span class="line"><span class="string">        bundle exec rake redmine:plugins:migrate RAILS_ENV=production</span></span><br><span class="line"><span class="string">        bundle exec rake tmp:cache:clear tmp:sessions:clear RAILS_ENV=production</span></span><br><span class="line"><span class="string">        /docker-entrypoint.sh passenger start</span></span><br><span class="line"><span class="string"># 或</span></span><br><span class="line"><span class="string"></span><span class="attr">  command:</span> <span class="string">["sh",</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"cp -r /usr/src/redmine/public/. /www/public/ &amp;&amp; /docker-entrypoint.sh"</span><span class="string">]</span></span><br></pre></td></tr></table></figure>
+<h3 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h3><h4 id="设置Mysql时区-默认字符集等参数"><a href="#设置Mysql时区-默认字符集等参数" class="headerlink" title="设置Mysql时区,默认字符集等参数"></a>设置Mysql时区,默认字符集等参数</h4><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  db:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">[</span></span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span><span class="string">,</span></span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span><span class="string">,</span></span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span><span class="string">,</span></span><br><span class="line">      <span class="string">'--default-authentication-plugin=mysql_native_password'</span></span><br><span class="line">    <span class="string">]</span></span><br><span class="line"><span class="comment"># 或</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  db:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">mysql</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    command:</span> <span class="bullet">--character-set-server=utf8mb4</span> <span class="bullet">--collation-server=utf8mb4_unicode_ci</span> <span class="bullet">--default-time-zone=+8:00</span> <span class="bullet">--default-authentication-plugin=mysql_native_password</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>To Be Continue</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/18/docker-Dockerfile/" rel="next" title="Dockerfile">
+                <i class="fa fa-chevron-left"></i> Dockerfile
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/18/docker-swarm/" rel="prev" title="docker-swarm">
+                docker-swarm <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="德巍" />
+            
+              <p class="site-author-name" itemprop="name">德巍</p>
+              <p class="site-description motion-element" itemprop="description">时间是把杀猪刀</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/del1214" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.v2ex.com/member/del1214" target="_blank" title="V2ex"><i class="fa fa-fw fa-globe"></i>V2ex</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://segmentfault.com/u/del1214" target="_blank" title="SegmentFault"><i class="fa fa-fw fa-globe"></i>SegmentFault</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/de-wei-3" target="_blank" title="Zhihu"><i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://space.bilibili.com/4830148/#/" target="_blank" title="bilibili"><i class="fa fa-fw fa-globe"></i>bilibili</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-compose"><span class="nav-number">1.</span> <span class="nav-text">docker-compose</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Compose文件"><span class="nav-number">1.1.</span> <span class="nav-text">Compose文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Compose文件版本选择"><span class="nav-number">1.1.1.</span> <span class="nav-text">Compose文件版本选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compose文件的编写"><span class="nav-number">1.2.</span> <span class="nav-text">Compose文件的编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译自己的Dockerfile"><span class="nav-number">1.3.</span> <span class="nav-text">编译自己的Dockerfile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#详细的配置"><span class="nav-number">1.4.</span> <span class="nav-text">详细的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用环境变量"><span class="nav-number">1.5.</span> <span class="nav-text">使用环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用命令"><span class="nav-number">1.6.</span> <span class="nav-text">常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#启动"><span class="nav-number">1.6.1.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#停止"><span class="nav-number">1.6.2.</span> <span class="nav-text">停止</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#检查单个容器环境"><span class="nav-number">1.6.3.</span> <span class="nav-text">检查单个容器环境</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#疑难配置详解"><span class="nav-number">1.7.</span> <span class="nav-text">疑难配置详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#command-和-entrypoint"><span class="nav-number">1.7.1.</span> <span class="nav-text">command 和 entrypoint</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#多行书写"><span class="nav-number">1.7.1.1.</span> <span class="nav-text">多行书写</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实战"><span class="nav-number">1.8.</span> <span class="nav-text">实战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设置Mysql时区-默认字符集等参数"><span class="nav-number">1.8.1.</span> <span class="nav-text">设置Mysql时区,默认字符集等参数</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">德巍</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"dialog":{"enable":true,"hitokoto":true},"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/tororo.model.json"},"display":{"position":"right","width":174,"height":312},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>

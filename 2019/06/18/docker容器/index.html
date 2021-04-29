@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="容器 ( Container )容器就是被隔离出来的虚拟环境 容器的生命周期: Created,Running,Paused,Stopped,Deleted Running是真正在运行的容器 保持一个容器处在Running状态就需要容器中PID为1的进程一直运行着，一旦这个进程停止意味着容器的停止  容器启动进程往往由Dockerfile中最后的ENTRYPOINT或CMD决定也就是这2选1个参数">
+<meta name="keywords" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="容器">
+<meta property="og:url" content="http://yoursite.com/2019/06/18/docker容器/index.html">
+<meta property="og:site_name" content="德聚全的部落格">
+<meta property="og:description" content="容器 ( Container )容器就是被隔离出来的虚拟环境 容器的生命周期: Created,Running,Paused,Stopped,Deleted Running是真正在运行的容器 保持一个容器处在Running状态就需要容器中PID为1的进程一直运行着，一旦这个进程停止意味着容器的停止  容器启动进程往往由Dockerfile中最后的ENTRYPOINT或CMD决定也就是这2选1个参数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-09T06:34:38.817Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="容器">
+<meta name="twitter:description" content="容器 ( Container )容器就是被隔离出来的虚拟环境 容器的生命周期: Created,Running,Paused,Stopped,Deleted Running是真正在运行的容器 保持一个容器处在Running状态就需要容器中PID为1的进程一直运行着，一旦这个进程停止意味着容器的停止  容器启动进程往往由Dockerfile中最后的ENTRYPOINT或CMD决定也就是这2选1个参数">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/18/docker容器/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>容器 | 德聚全的部落格</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">德聚全的部落格</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">随便写一些开发的经验和生活的感悟</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/18/docker容器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="德巍">
+      <meta itemprop="description" content="时间是把杀猪刀">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="德聚全的部落格">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">容器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-18 14:19:07" itemprop="dateCreated datePublished" datetime="2019-06-18T14:19:07+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-09 14:34:38" itemprop="dateModified" datetime="2020-09-09T14:34:38+08:00">2020-09-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="容器-Container"><a href="#容器-Container" class="headerlink" title="容器 ( Container )"></a>容器 ( Container )</h2><p>容器就是被隔离出来的虚拟环境</p>
+<p>容器的生命周期: <strong><em>Created,Running,Paused,Stopped,Deleted</em></strong></p>
+<p>Running是真正在运行的容器</p>
+<p>保持一个容器处在Running状态就需要容器中PID为1的进程一直运行着，一旦这个进程停止意味着容器的停止</p>
+<blockquote>
+<p>容器启动进程往往由Dockerfile中最后的ENTRYPOINT或CMD决定<br>也就是这2选1个参数执行的shell脚本执行的程序不能报错，且必须停留在命令行上，</p>
+</blockquote>
+<h3 id="创建容器"><a href="#创建容器" class="headerlink" title="创建容器"></a>创建容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker create --name mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:latest</span><br><span class="line">8101a3998e3c86fe266e3ec35db21263ab645c982043daa84e3b985445ebf5fc</span><br></pre></td></tr></table></figure>
+<p>执行 <code>docker create</code> 后，Docker 会根据命令使用镜像创建容器，并在控制台打印出容器 ID，此时容器是处于 Created 状态的。</p>
+<p>我们可以用容器ID或容器name来操作容器</p>
+<h3 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker start mysql</span><br></pre></td></tr></table></figure>
+<p>通过 <code>docker start</code>命令启动了容器</p>
+<p>有人会说真麻烦，创建一步启动一步，下面就一键启动</p>
+<blockquote>
+<p>看了docker start的参数发现它可以一次启动多个容器，也并非一无是处</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker start [OPTIONS] CONTAINER [CONTAINER...]</span><br></pre></td></tr></table></figure>
+<h4 id="docker-run"><a href="#docker-run" class="headerlink" title="docker run"></a>docker run</h4><p><code>docker run</code>将<code>docker create</code>和<code>docker start</code>两步并作一步，容器创建后会立刻启动</p>
+<p><code>docker run</code> 是我们居家旅行杀人灭口必备命令，它能干的事非常多</p>
+<h5 id="高级内容，不熟可跳过"><a href="#高级内容，不熟可跳过" class="headerlink" title="高级内容，不熟可跳过"></a><strong><em>高级内容，不熟可跳过</em></strong></h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">docker run [OPTIONS] IMAGE:TAG [COMMAND] [ARG...]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用参数</span></span><br><span class="line"><span class="comment"># -a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -d: 后台运行容器，并返回容器ID；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -i: 以交互模式运行容器，通常与 -t 同时使用；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -P: 随机端口映射，容器内部端口随机映射到主机的高端口</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -p: 指定端口映射，格式为：主机(宿主)端口:容器端口</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -t: 为容器重新分配一个伪输入终端，通常与 -i 同时使用；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --name="nginx-lb": 为容器指定一个名称；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --dns 8.8.8.8: 指定容器使用的DNS服务器，默认和宿主一致；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --dns-search example.com: 指定容器DNS搜索域名，默认和宿主一致；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -h "mars": 指定容器的hostname；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -e username="ritchie": 设置环境变量，可指定多个；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --env-file=[]: 从指定文件读入环境变量；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --cpuset="0-2" or --cpuset="0,1,2": 绑定容器到指定CPU运行；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -m :设置容器使用内存最大值；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --net="bridge": 指定容器的网络连接类型，支持 bridge/host/none/container: 四种类型；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --rm $container_name: 如果容器存在则删除</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --link=[]: 添加链接到另一个容器；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --expose=[]: 开放一个端口或一组端口；</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong><em>保持一个容器运行不退出的必须是 ENTRYPOINT 或 CMD 占据bash不退出的命令</em></strong></p>
+</blockquote>
+<h5 id="实用命令"><a href="#实用命令" class="headerlink" title="实用命令"></a><strong><em>实用命令</em></strong></h5><p>后台运行</p>
+<blockquote>
+<p>后台启动一个以nginx最新版本镜像的容器，命名为mynginx</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name mynginx -d nginx:latest</span><br></pre></td></tr></table></figure>
+<p>端口绑定</p>
+<blockquote>
+<p>docker run 子命令启动容器，-p 将容器的 8000 端口映射到宿 主机的 8000 端口上，–name 给容器赋予一个唯一的名字， 最后一个参数是镜像</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 8000:8000 --name <span class="variable">$container_name</span> <span class="variable">$image_name</span></span><br></pre></td></tr></table></figure>
+<p>交互方式运行</p>
+<blockquote>
+<p>使用-t -i用交互方式运行<br>镜像名后面固定跟着的是 cmd</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -t -i <span class="variable">$image_name</span> /bin/bash</span><br></pre></td></tr></table></figure>
+<p>挂载目录</p>
+<blockquote>
+<p>your_dir必须是绝对路径</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /your_dir:/target_dir debian</span><br></pre></td></tr></table></figure>
+<p>指定环境变量</p>
+<blockquote>
+<p>启动一个mysql</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=123456 -d -e MYSQL_DATABASE=my_database -v /your_abs_dir:/var/lib/mysql mysql:latest</span><br></pre></td></tr></table></figure>
+<p>容器退出时删除数据卷</p>
+<blockquote>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name xxx --rm mysql</span><br></pre></td></tr></table></figure>
+<h3 id="管理容器"><a href="#管理容器" class="headerlink" title="管理容器"></a>管理容器</h3><h4 id="查看容器列表"><a href="#查看容器列表" class="headerlink" title="查看容器列表"></a>查看容器列表</h4><p>通过 <code>docker ps</code>可以列出Docker中的容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br><span class="line"><span class="comment"># 默认情况下只列出Running状态的容器</span></span><br><span class="line">CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS                    NAMES</span><br><span class="line">2884ecbd2e57        inessence_official_webapp   <span class="string">"docker-entrypoint.s…"</span>   About an hour ago   Up About an hour    0.0.0.0:8888-&gt;3000/tcp   inessence_official_webapp_1</span><br><span class="line">04c32cf7999c        mysql:latest                <span class="string">"docker-entrypoint.s…"</span>   4 hours ago         Up 4 hours          3306/tcp, 33060/tcp      fuck</span><br><span class="line">59491db0f044        mongo:3.4                   <span class="string">"docker-entrypoint.s…"</span>   22 hours ago        Up 6 hours          27017/tcp                easy-mock-docker-160_mongodb_1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a</span><br><span class="line">docker ps --all</span><br><span class="line"><span class="comment"># 列出全部</span></span><br></pre></td></tr></table></figure>
+<p>通过<code>docker ps</code>可以看到容器ID(CONTAINER ID),使用镜像(IMAGE),执行命令(COMMAND),创建时间(CREATED),状态(STATUS),端口(PORTS),名称(NAMES)</p>
+<p>其中状态(STATUS)有3种状态</p>
+<ul>
+<li>Created 此时容器已创建，但还没有被启动过</li>
+<li>Up [ Time ] 这时候容器处于正在运行状态，而这里的 Time 表示容器从开始运行到查看时的时间</li>
+<li>Exited ([ Code ]) [ Time ] 容器已经结束运行，这里的 Code 表示容器结束运行时，主程序返回的程序退出码，而 Time 则表示容器结束到查看时的时间</li>
+</ul>
+<p>一般你都会看到第三种的，等你成为高手了总会是第二种，😊</p>
+<h3 id="停止容器"><a href="#停止容器" class="headerlink" title="停止容器"></a>停止容器</h3><h4 id="docker-stop"><a href="#docker-stop" class="headerlink" title="docker stop"></a>docker stop</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop mysql</span><br></pre></td></tr></table></figure>
+<p>容器停止后，内部被修改的内容会保留，可以通过 docker start 命令将这个容器再次启动</p>
+<h3 id="暂停恢复容器内进程"><a href="#暂停恢复容器内进程" class="headerlink" title="暂停恢复容器内进程"></a>暂停恢复容器内进程</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker pause mysql</span><br><span class="line"><span class="comment"># docker pause [OPTIONS] CONTAINER [CONTAINER...]</span></span><br><span class="line">docker unpause mysql</span><br><span class="line"><span class="comment"># docker unpause [OPTIONS] CONTAINER [CONTAINER...]</span></span><br></pre></td></tr></table></figure>
+<h3 id="查看容器进程信息"><a href="#查看容器进程信息" class="headerlink" title="查看容器进程信息"></a>查看容器进程信息</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker top mysql</span><br><span class="line"><span class="comment"># docker top CONTAINER [ps OPTIONS]</span></span><br></pre></td></tr></table></figure>
+<h3 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a>删除容器</h3><h4 id="docker-rm"><a href="#docker-rm" class="headerlink" title="docker rm"></a>docker rm</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm mysql</span><br></pre></td></tr></table></figure>
+<p>运行中的容器是不允许被删除的，可以加参数</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker rm -f mysql</span><br><span class="line">docker rm --force</span><br></pre></td></tr></table></figure>
+<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><p>很多时候我们都想深入了解对方，是时候进入容器了</p>
+<h4 id="在容器内执行命令"><a href="#在容器内执行命令" class="headerlink" title="在容器内执行命令"></a>在容器内执行命令</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker exec [OPTIONS] CONTAINER COMMAND [ARG...]</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql cat /etc/hostname</span><br></pre></td></tr></table></figure>
+<h4 id="在容器内启动bash"><a href="#在容器内启动bash" class="headerlink" title="在容器内启动bash"></a><strong><em>在容器内启动bash</em></strong></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mysql /bin/bash</span><br><span class="line">root@6c1988417237:/<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<h3 id="查看容器日志"><a href="#查看容器日志" class="headerlink" title="查看容器日志"></a>查看容器日志</h3><p>有时我们需要观察容器在启动和运行过程中打印在bash上的日志</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs CONTAINER</span><br></pre></td></tr></table></figure>
+<h3 id="查看容器元数据"><a href="#查看容器元数据" class="headerlink" title="查看容器元数据"></a>查看容器元数据</h3><p>成为高手后会经常查看吧，反正我没看过</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect CONTAINER</span><br></pre></td></tr></table></figure>
+<h3 id="docker-container"><a href="#docker-container" class="headerlink" title="docker container"></a>docker container</h3><p>专门管理容器的命令,更细化了管理能力,我就不一一翻译了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Usage:	docker container COMMAND</span><br><span class="line"></span><br><span class="line">Manage containers</span><br><span class="line"></span><br><span class="line">Commands:</span><br><span class="line">  attach      Attach <span class="built_in">local</span> standard input, output, and error streams to a running container</span><br><span class="line">  commit      Create a new image from a container<span class="string">'s changes</span></span><br><span class="line"><span class="string">  cp          Copy files/folders between a container and the local filesystem</span></span><br><span class="line"><span class="string">  create      Create a new container</span></span><br><span class="line"><span class="string">  diff        Inspect changes to files or directories on a container'</span>s filesystem</span><br><span class="line">  <span class="built_in">exec</span>        Run a <span class="built_in">command</span> <span class="keyword">in</span> a running container</span><br><span class="line">  <span class="built_in">export</span>      Export a container<span class="string">'s filesystem as a tar archive</span></span><br><span class="line"><span class="string">  inspect     Display detailed information on one or more containers</span></span><br><span class="line"><span class="string">  kill        Kill one or more running containers</span></span><br><span class="line"><span class="string">  logs        Fetch the logs of a container</span></span><br><span class="line"><span class="string">  ls          List containers</span></span><br><span class="line"><span class="string">  pause       Pause all processes within one or more containers</span></span><br><span class="line"><span class="string">  port        List port mappings or a specific mapping for the container</span></span><br><span class="line"><span class="string">  prune       Remove all stopped containers</span></span><br><span class="line"><span class="string">  rename      Rename a container</span></span><br><span class="line"><span class="string">  restart     Restart one or more containers</span></span><br><span class="line"><span class="string">  rm          Remove one or more containers</span></span><br><span class="line"><span class="string">  run         Run a command in a new container</span></span><br><span class="line"><span class="string">  start       Start one or more stopped containers</span></span><br><span class="line"><span class="string">  stats       Display a live stream of container(s) resource usage statistics</span></span><br><span class="line"><span class="string">  stop        Stop one or more running containers</span></span><br><span class="line"><span class="string">  top         Display the running processes of a container</span></span><br><span class="line"><span class="string">  unpause     Unpause all processes within one or more containers</span></span><br><span class="line"><span class="string">  update      Update configuration of one or more containers</span></span><br><span class="line"><span class="string">  wait        Block until one or more containers stop, then print their exit codes</span></span><br></pre></td></tr></table></figure>
+<h3 id="实用命令-1"><a href="#实用命令-1" class="headerlink" title="实用命令"></a>实用命令</h3><h4 id="停止所有的容器"><a href="#停止所有的容器" class="headerlink" title="停止所有的容器"></a>停止所有的容器</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop $(docker ps -a -q)</span><br></pre></td></tr></table></figure>
+<h4 id="删除所有容器"><a href="#删除所有容器" class="headerlink" title="删除所有容器"></a>删除所有容器</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker rm $(docker ps -a -q)</span><br><span class="line">docker rm -f $(docker ps -a -q)</span><br></pre></td></tr></table></figure>
+<h4 id="获取容器ip"><a href="#获取容器ip" class="headerlink" title="获取容器ip"></a>获取容器ip</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker inspect \</span><br><span class="line">&gt; --format <span class="string">'&#123;&#123;.NetworkSettings.IPAddress&#125;&#125;'</span> \</span><br><span class="line">&gt; container_id</span><br></pre></td></tr></table></figure>
+<h4 id="查看所有容器进程信息"><a href="#查看所有容器进程信息" class="headerlink" title="查看所有容器进程信息"></a>查看所有容器进程信息</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span>  `docker ps |grep Up|awk <span class="string">'&#123;print $1&#125;'</span>`;<span class="keyword">do</span> <span class="built_in">echo</span> \ &amp;&amp;docker top <span class="variable">$i</span>; <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<h2 id="To-Be-Continue"><a href="#To-Be-Continue" class="headerlink" title="To Be Continue"></a>To Be Continue</h2>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/18/docker镜像/" rel="next" title="镜像">
+                <i class="fa fa-chevron-left"></i> 镜像
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/18/docker网络/" rel="prev" title="网络">
+                网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="德巍" />
+            
+              <p class="site-author-name" itemprop="name">德巍</p>
+              <p class="site-description motion-element" itemprop="description">时间是把杀猪刀</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/del1214" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.v2ex.com/member/del1214" target="_blank" title="V2ex"><i class="fa fa-fw fa-globe"></i>V2ex</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://segmentfault.com/u/del1214" target="_blank" title="SegmentFault"><i class="fa fa-fw fa-globe"></i>SegmentFault</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/de-wei-3" target="_blank" title="Zhihu"><i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://space.bilibili.com/4830148/#/" target="_blank" title="bilibili"><i class="fa fa-fw fa-globe"></i>bilibili</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#容器-Container"><span class="nav-number">1.</span> <span class="nav-text">容器 ( Container )</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建容器"><span class="nav-number">1.1.</span> <span class="nav-text">创建容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动容器"><span class="nav-number">1.2.</span> <span class="nav-text">启动容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#docker-run"><span class="nav-number">1.2.1.</span> <span class="nav-text">docker run</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#高级内容，不熟可跳过"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">高级内容，不熟可跳过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实用命令"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">实用命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#管理容器"><span class="nav-number">1.3.</span> <span class="nav-text">管理容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#查看容器列表"><span class="nav-number">1.3.1.</span> <span class="nav-text">查看容器列表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#停止容器"><span class="nav-number">1.4.</span> <span class="nav-text">停止容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#docker-stop"><span class="nav-number">1.4.1.</span> <span class="nav-text">docker stop</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#暂停恢复容器内进程"><span class="nav-number">1.5.</span> <span class="nav-text">暂停恢复容器内进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看容器进程信息"><span class="nav-number">1.6.</span> <span class="nav-text">查看容器进程信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除容器"><span class="nav-number">1.7.</span> <span class="nav-text">删除容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#docker-rm"><span class="nav-number">1.7.1.</span> <span class="nav-text">docker rm</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进入容器"><span class="nav-number">1.8.</span> <span class="nav-text">进入容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#在容器内执行命令"><span class="nav-number">1.8.1.</span> <span class="nav-text">在容器内执行命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在容器内启动bash"><span class="nav-number">1.8.2.</span> <span class="nav-text">在容器内启动bash</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看容器日志"><span class="nav-number">1.9.</span> <span class="nav-text">查看容器日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看容器元数据"><span class="nav-number">1.10.</span> <span class="nav-text">查看容器元数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-container"><span class="nav-number">1.11.</span> <span class="nav-text">docker container</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实用命令-1"><span class="nav-number">1.12.</span> <span class="nav-text">实用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#停止所有的容器"><span class="nav-number">1.12.1.</span> <span class="nav-text">停止所有的容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除所有容器"><span class="nav-number">1.12.2.</span> <span class="nav-text">删除所有容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取容器ip"><span class="nav-number">1.12.3.</span> <span class="nav-text">获取容器ip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看所有容器进程信息"><span class="nav-number">1.12.4.</span> <span class="nav-text">查看所有容器进程信息</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#To-Be-Continue"><span class="nav-number">2.</span> <span class="nav-text">To Be Continue</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">德巍</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"dialog":{"enable":true,"hitokoto":true},"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/tororo.model.json"},"display":{"position":"right","width":174,"height":312},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在 Docker 体系里，有四个对象 ( Object ) ，几乎所有 Docker 以及周边生态的功能，都是围绕着它们所展开的。它们分别是：镜像 ( Image )、容器 ( Container )、网络 ( Network )、数据卷 ( Volume ) 镜像 ( Image )所谓镜像，可以理解为一个 只读的 文件包，其中包含了 虚拟环境运行最原始文件系统的内容  每次对镜像内容的修改，D">
+<meta name="keywords" content="Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="镜像">
+<meta property="og:url" content="http://yoursite.com/2019/06/18/docker镜像/index.html">
+<meta property="og:site_name" content="德聚全的部落格">
+<meta property="og:description" content="在 Docker 体系里，有四个对象 ( Object ) ，几乎所有 Docker 以及周边生态的功能，都是围绕着它们所展开的。它们分别是：镜像 ( Image )、容器 ( Container )、网络 ( Network )、数据卷 ( Volume ) 镜像 ( Image )所谓镜像，可以理解为一个 只读的 文件包，其中包含了 虚拟环境运行最原始文件系统的内容  每次对镜像内容的修改，D">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-09T06:34:38.817Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="镜像">
+<meta name="twitter:description" content="在 Docker 体系里，有四个对象 ( Object ) ，几乎所有 Docker 以及周边生态的功能，都是围绕着它们所展开的。它们分别是：镜像 ( Image )、容器 ( Container )、网络 ( Network )、数据卷 ( Volume ) 镜像 ( Image )所谓镜像，可以理解为一个 只读的 文件包，其中包含了 虚拟环境运行最原始文件系统的内容  每次对镜像内容的修改，D">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/18/docker镜像/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>镜像 | 德聚全的部落格</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">德聚全的部落格</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">随便写一些开发的经验和生活的感悟</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/18/docker镜像/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="德巍">
+      <meta itemprop="description" content="时间是把杀猪刀">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="德聚全的部落格">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">镜像
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-18 13:50:53" itemprop="dateCreated datePublished" datetime="2019-06-18T13:50:53+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-09 14:34:38" itemprop="dateModified" datetime="2020-09-09T14:34:38+08:00">2020-09-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在 Docker 体系里，有四个对象 ( Object ) ，几乎所有 Docker 以及周边生态的功能，都是围绕着它们所展开的。它们分别是：镜像 ( Image )、容器 ( Container )、网络 ( Network )、数据卷 ( Volume )</p>
+<h2 id="镜像-Image"><a href="#镜像-Image" class="headerlink" title="镜像 ( Image )"></a>镜像 ( Image )</h2><p>所谓镜像，可以理解为一个 <strong><em>只读的</em></strong> 文件包，其中包含了 <strong><em>虚拟环境运行最原始文件系统的内容</em></strong></p>
+<blockquote>
+<p>每次对镜像内容的修改，Docker 都会将这些修改铸造成一个镜像层，而一个镜像其实就是由其下层所有的镜像层所组成的。当然，每一个镜像层单独拿出来，与它之下的镜像层都可以组成一个镜像。</p>
+<blockquote>
+<p>另外，由于这种结构，Docker 的镜像实质上是无法被修改的，因为所有对镜像的修改只会产生新的镜像，而不是更新原有的镜像。</p>
+</blockquote>
+</blockquote>
+<h3 id="查看镜像"><a href="#查看镜像" class="headerlink" title="查看镜像"></a>查看镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br><span class="line">REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">inessence_official_webapp                  latest              fbd81bfea9a3        3 hours ago         1.16GB</span><br><span class="line">io_ts_webapp                               latest              666d494004eb        5 days ago          406MB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              0476fa281a13        5 days ago          406MB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              9b4121e2db9f        5 days ago          406MB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              fa23efbdda7d        5 days ago          406MB</span><br><span class="line">mongo                                      &lt;none&gt;              0a8d98121dec        5 days ago          426MB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              b9f227d5c6f7        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              a083f63f5823        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              f75daa7736f5        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              268ac0217a08        6 days ago          226MB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              ab24983e2216        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              92984335200c        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              f99fee163ae5        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              e6fbaa07088f        6 days ago          1.08GB</span><br><span class="line">&lt;none&gt;                                     &lt;none&gt;              8a2c102b92c5        6 days ago          1.08GB</span><br><span class="line">nginx                                      latest              719cd2e3ed04        7 days ago          109MB</span><br><span class="line">zabbix/zabbix-server-mysql                 latest              890289d63b00        7 days ago          65.3MB</span><br><span class="line">zabbix/zabbix-web-apache-mysql             latest              abbb7efb4887        7 days ago          108MB</span><br><span class="line">zabbix/zabbix-agent                        latest              4b2ee6b413bc        7 days ago          14.9MB</span><br><span class="line">node                                       8.16.0-alpine       e08ba08cf75a        13 days ago         66.7MB</span><br><span class="line">sinopia-docker_sinopia                     latest              a9a2ab793aa0        2 weeks ago         143MB</span><br><span class="line">sinopia                                    latest              ddf619bf46b6        2 weeks ago         143MB</span><br><span class="line">node                                       alpine              91acf04599c4        3 weeks ago         79.6MB</span><br><span class="line">mongo                                      3.4                 3e07e22f0dbf        4 weeks ago         426MB</span><br><span class="line">mysql                                      latest              990386cbd5c0        5 weeks ago         443MB</span><br><span class="line">easymock/easymock                          1.6.0               193a7b904d4f        5 weeks ago         699MB</span><br><span class="line">mysql                                      5.7                 7faa3c53e6d6        5 weeks ago         373MB</span><br><span class="line">k8s.gcr.io/kubernetes-dashboard-amd64      v1.10.1             f9aed6605b81        6 months ago        122MB</span><br><span class="line">k8s.gcr.io/kube-proxy-amd64                v1.10.11            7387003276ac        6 months ago        98.3MB</span><br><span class="line">k8s.gcr.io/kube-apiserver-amd64            v1.10.11            e851a7aeb6e8        6 months ago        228MB</span><br><span class="line">k8s.gcr.io/kube-controller-manager-amd64   v1.10.11            978cfa2028bf        6 months ago        151MB</span><br><span class="line">k8s.gcr.io/kube-scheduler-amd64            v1.10.11            d2c751d562c6        6 months ago        51.2MB</span><br><span class="line">docker/kube-compose-controller             v0.4.12             02a45592fbea        9 months ago        27.8MB</span><br><span class="line">docker/kube-compose-api-server             v0.4.12             0f92c77fa676        9 months ago        41.2MB</span><br><span class="line">k8s.gcr.io/etcd-amd64                      3.1.12              52920ad46f5b        15 months ago       193MB</span><br><span class="line">mritd/idgen                                latest              07e1eab12bef        15 months ago       35.7MB</span><br><span class="line">k8s.gcr.io/k8s-dns-dnsmasq-nanny-amd64     1.14.8              c2ce1ffb51ed        17 months ago       41MB</span><br><span class="line">k8s.gcr.io/k8s-dns-sidecar-amd64           1.14.8              6f7f2dc7fab5        17 months ago       42.2MB</span><br><span class="line">k8s.gcr.io/k8s-dns-kube-dns-amd64          1.14.8              80cc5ea4b547        17 months ago       50.5MB</span><br><span class="line">k8s.gcr.io/pause-amd64                     3.1                 da86e6ba6ca1        18 months ago       742kB</span><br><span class="line">k8s.gcr.io/pause                           3.1                 da86e6ba6ca1        18 months ago       742kB</span><br><span class="line">redis                                      4.0.6               1e70071f4af4        18 months ago       107MB</span><br><span class="line">quay.io/coreos/hyperkube                   v1.7.6_coreos.0     2faf6f7a322f        21 months ago       699MB</span><br><span class="line">skyzhou/docker-discuz                      latest              54339c48016c        4 years ago         269MB</span><br></pre></td></tr></table></figure>
+<h3 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker pull node</span><br><span class="line">Using default tag: latest</span><br><span class="line">latest: Pulling from library/node</span><br><span class="line">6f2f362378c5: Downloading [=======&gt;                                           ]  6.876MB/45.34MB</span><br><span class="line">494c27a8a6b8: Download complete</span><br><span class="line">7596bb83081b: Download complete</span><br><span class="line">372744b62d49: Downloading [=====&gt;                                             ]   5.09MB/50.07MB</span><br><span class="line">615db220d76c: Waiting</span><br><span class="line">afaefeaac9ee: Waiting</span><br><span class="line">22d677ae7b14: Waiting</span><br><span class="line">954f64c2b02a: Waiting</span><br><span class="line">3a0d282381d6: Waiting</span><br></pre></td></tr></table></figure>
+<h3 id="搜索镜像"><a href="#搜索镜像" class="headerlink" title="搜索镜像"></a>搜索镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">docker search node</span><br><span class="line">NAME                                   DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED</span><br><span class="line">node                                   Node.js is a JavaScript-based platform <span class="keyword">for</span> s…   7531                [OK]</span><br><span class="line">mongo-express                          Web-based MongoDB admin interface, written w…   468                 [OK]</span><br><span class="line">nodered/node-red-docker                Node-RED Docker images.                         316                                     [OK]</span><br><span class="line">selenium/node-chrome                                                                   194                                     [OK]</span><br><span class="line">prom/node-exporter                                                                     136                                     [OK]</span><br><span class="line">iojs                                   io.js is an npm compatible platform original…   130                 [OK]</span><br><span class="line">selenium/node-firefox                                                                  121                                     [OK]</span><br><span class="line">circleci/node                          Node.js is a JavaScript-based platform <span class="keyword">for</span> s…   87</span><br><span class="line">readytalk/nodejs                       Node.js based off the official Debian Wheezy…   51                                      [OK]</span><br><span class="line">digitallyseamless/nodejs-bower-grunt    Node.js w/ Bower &amp; Grunt Dockerfile <span class="keyword">for</span> tru…   48                                      [OK]</span><br><span class="line">kkarczmarczyk/node-yarn                Node docker image with yarn package manager …   47                                      [OK]</span><br><span class="line">bitnami/node                           Bitnami Node.js Docker Image                    38                                      [OK]</span><br><span class="line">iron/node                              Tiny Node image                                 29</span><br><span class="line">calico/node                                                                            17                                      [OK]</span><br><span class="line">appsvc/node                            Azure App Service Node.js dockerfiles           12                                      [OK]</span><br><span class="line">centos/nodejs-8-centos7                Platform <span class="keyword">for</span> building and running Node.js 8 …   8</span><br><span class="line">cusspvz/node                           🌐 Super small Node.js container (~15MB) bas…    7                                       [OK]</span><br><span class="line">mc2labs/nodejs                         CoffeScript and Supervisor powered Nodejs ba…   7                                       [OK]</span><br><span class="line">basi/node-exporter                     Node exporter image that allows to expose th…   7                                       [OK]</span><br><span class="line">centos/nodejs-6-centos7                Platform <span class="keyword">for</span> building and running Node.js 6 …   4</span><br><span class="line">ppc64le/node                           Node.js is a JavaScript-based platform <span class="keyword">for</span> s…   2</span><br><span class="line">nodecg/nodecg                          Create broadcast graphics using Node.js and …   1                                       [OK]</span><br><span class="line">ogazitt/node-env                       node app that shows environment variables       0</span><br><span class="line">camptocamp/node-collectd               rancher node monitoring agent                   0                                       [OK]</span><br><span class="line">appsvctest/node                        node build                                      0                                       [OK]</span><br></pre></td></tr></table></figure>
+<p>当然上面的太极客了，我一般是去<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a>搜索</p>
+<h3 id="使用阿里云仓库"><a href="#使用阿里云仓库" class="headerlink" title="使用阿里云仓库"></a>使用阿里云仓库</h3><p>linux 下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/docker/daemon.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># "registry-mirrors": ["https://dftbcros.mirror.aliyuncs.com"]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#125;</span></span><br><span class="line"></span><br><span class="line">systemctl restart docker即可</span><br></pre></td></tr></table></figure>
+<p>Docker Desktop直接在首选项的Daemon面板添加Registry mirrors项即可</p>
+<h3 id="从容器创建一个新的镜像"><a href="#从容器创建一个新的镜像" class="headerlink" title="从容器创建一个新的镜像"></a>从容器创建一个新的镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker commit -a <span class="string">"runoob.com"</span> -m <span class="string">"my apache"</span> a404c6c174a2  mymysql:v1</span><br><span class="line">docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]</span><br></pre></td></tr></table></figure>
+<h3 id="标记镜像"><a href="#标记镜像" class="headerlink" title="标记镜像"></a>标记镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker tag [OPTIONS] IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]</span><br></pre></td></tr></table></figure>
+<h3 id="保存镜像"><a href="#保存镜像" class="headerlink" title="保存镜像"></a>保存镜像</h3><p>将指定镜像保存成tar包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker save -o my_node_v1.tar node</span><br><span class="line">docker save node &gt; my_node_v1.tar</span><br></pre></td></tr></table></figure>
+<h3 id="导入镜像"><a href="#导入镜像" class="headerlink" title="导入镜像"></a>导入镜像</h3><p>只是导入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker load -i my_node_v1.tar</span><br><span class="line">docker load &lt; my_node_v1.tar</span><br></pre></td></tr></table></figure>
+<h3 id="从压缩包创建镜像"><a href="#从压缩包创建镜像" class="headerlink" title="从压缩包创建镜像"></a>从压缩包创建镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker import my_node_v1.tar my_node_v1</span><br><span class="line">REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">my_node_v1                                 latest              39dba8b60aa0        6 seconds ago       1.08GB</span><br></pre></td></tr></table></figure>
+<h3 id="查看镜像创建历史"><a href="#查看镜像创建历史" class="headerlink" title="查看镜像创建历史"></a>查看镜像创建历史</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">history</span> my_node_v</span><br></pre></td></tr></table></figure>
+<h3 id="查看镜像元数据"><a href="#查看镜像元数据" class="headerlink" title="查看镜像元数据"></a>查看镜像元数据</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect IMAGE</span><br></pre></td></tr></table></figure>
+<h3 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h3><p>通俗易懂，牛逼的在下面</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi IMAGE</span><br></pre></td></tr></table></figure>
+<h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><p>参见Dockerfile部分</p>
+<h3 id="实用技巧"><a href="#实用技巧" class="headerlink" title="实用技巧"></a>实用技巧</h3><h4 id="删除untagged镜像"><a href="#删除untagged镜像" class="headerlink" title="删除untagged镜像"></a>删除untagged镜像</h4><p>构建镜像时产生的中间层，那些id为 <none>的image的话可以用</none></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi $(docker images | grep <span class="string">"^&lt;none&gt;"</span> | awk <span class="string">"&#123;print <span class="variable">$3</span>&#125;"</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="删掉全部镜像"><a href="#删掉全部镜像" class="headerlink" title="删掉全部镜像"></a>删掉全部镜像</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi $(docker images -q)</span><br></pre></td></tr></table></figure>
+<h4 id="镜像缓存"><a href="#镜像缓存" class="headerlink" title="镜像缓存"></a>镜像缓存</h4><p>利用上面每一层不可修改的特性，每次的修改会产生缓存层，在制作自己的镜像时可以加速镜像的构建</p>
+<p>例如: 精油官网的Dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">8.16</span>.<span class="number">0</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设定node-sass源</span></span><br><span class="line"><span class="keyword">ENV</span> SASS_BINARY_SITE https://npm.taobao.org/mirrors/node-sass</span><br><span class="line"><span class="comment"># 设定cnpm源 全局安装pm2 gulp</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> npm config <span class="built_in">set</span> registry http://r.cnpmjs.org/ \</span></span><br><span class="line"><span class="bash">  &amp;&amp; npm i -g pm2 \</span></span><br><span class="line"><span class="bash">  &amp;&amp; npm i -g gulp</span></span><br><span class="line"><span class="bash">RUN mkdir -p /code</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">COPY ./package.json /code</span></span><br><span class="line"><span class="bash">COPY ./npm-shrinkwrap.json /code</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># 设定工作目录</span></span></span><br><span class="line"><span class="bash">WORKDIR  /code</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># 安装依赖 发布文件</span></span></span><br><span class="line"><span class="bash">RUN npm i</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># 拷贝源码</span></span></span><br><span class="line"><span class="bash">COPY ./ /code</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash"><span class="comment"># 设定生产环境变量，在此之前设定不会安装开发依赖</span></span></span><br><span class="line"><span class="bash">ENV NODE_ENV production</span></span><br><span class="line"><span class="bash">CMD npm run publish\</span></span><br><span class="line"><span class="bash">  &amp;&amp; npm start</span></span><br></pre></td></tr></table></figure>
+<p>执行编译结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">Building webapp</span><br><span class="line">Step 1/11 : FROM node:8.16.0-alpine</span><br><span class="line"><span class="comment"># 第一步配置了node的镜像版本</span></span><br><span class="line"> ---&gt; e08ba08cf75a</span><br><span class="line">Step 2/11 : ENV SASS_BINARY_SITE https://npm.taobao.org/mirrors/node-sass</span><br><span class="line"><span class="comment"># 第二步配置了node_sass环境变量</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; 9ae0bff187ae</span><br><span class="line">Step 3/11 : RUN npm config <span class="built_in">set</span> registry http://r.cnpmjs.org/   &amp;&amp; npm i -g pm2   &amp;&amp; npm i -g gulp</span><br><span class="line"><span class="comment"># 第三步配置了node仓库 安装了全局依赖</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; aded62ca7c9c</span><br><span class="line">Step 4/11 : RUN mkdir -p /code</span><br><span class="line"><span class="comment"># 创建了代码文件夹</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; 240959fb5df5</span><br><span class="line">Step 5/11 : COPY ./package.json /code</span><br><span class="line"><span class="comment"># 拷贝项目依赖到代码文件夹</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; 0cff32374228</span><br><span class="line">Step 6/11 : COPY ./npm-shrinkwrap.json /code</span><br><span class="line"><span class="comment"># 拷贝项目依赖到代码文件夹</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; 302a5dfaf730</span><br><span class="line">Step 7/11 : WORKDIR  /code</span><br><span class="line"><span class="comment"># 设置工作目录</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; 37e654041ce1</span><br><span class="line">Step 8/11 : RUN npm i</span><br><span class="line"><span class="comment"># 依赖安装</span></span><br><span class="line"><span class="comment"># &gt;可以看到只要依赖关系不变，就不用添加新的依赖包</span></span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; 5503b8604ed0</span><br><span class="line">Step 9/11 : COPY ./ /code</span><br><span class="line"><span class="comment"># 拷贝代码到代码文件夹</span></span><br><span class="line"> ---&gt; 89508baebd0b</span><br><span class="line">Step 10/11 : ENV NODE_ENV production</span><br><span class="line"><span class="comment"># 设置环境变量</span></span><br><span class="line"> ---&gt; Running <span class="keyword">in</span> 246d370b0294</span><br><span class="line">Removing intermediate container 246d370b0294</span><br><span class="line"> ---&gt; c98a8f5f942c</span><br><span class="line">Step 11/11 : CMD npm run publish  &amp;&amp; npm start</span><br><span class="line"><span class="comment"># 执行启动命令</span></span><br><span class="line"> ---&gt; Running <span class="keyword">in</span> a10bcd80fab6</span><br><span class="line">Removing intermediate container a10bcd80fab6</span><br><span class="line"> ---&gt; fbd81bfea9a3</span><br><span class="line">Successfully built fbd81bfea9a3</span><br><span class="line">Successfully tagged inessence_official_webapp:latest</span><br><span class="line">Creating inessence_official_webapp_1 ... <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/18/docker浅谈/" rel="next" title="浅谈">
+                <i class="fa fa-chevron-left"></i> 浅谈
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/18/docker容器/" rel="prev" title="容器">
+                容器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="德巍" />
+            
+              <p class="site-author-name" itemprop="name">德巍</p>
+              <p class="site-description motion-element" itemprop="description">时间是把杀猪刀</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/del1214" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.v2ex.com/member/del1214" target="_blank" title="V2ex"><i class="fa fa-fw fa-globe"></i>V2ex</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://segmentfault.com/u/del1214" target="_blank" title="SegmentFault"><i class="fa fa-fw fa-globe"></i>SegmentFault</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/de-wei-3" target="_blank" title="Zhihu"><i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://space.bilibili.com/4830148/#/" target="_blank" title="bilibili"><i class="fa fa-fw fa-globe"></i>bilibili</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像-Image"><span class="nav-number">1.</span> <span class="nav-text">镜像 ( Image )</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看镜像"><span class="nav-number">1.1.</span> <span class="nav-text">查看镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取镜像"><span class="nav-number">1.2.</span> <span class="nav-text">获取镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索镜像"><span class="nav-number">1.3.</span> <span class="nav-text">搜索镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用阿里云仓库"><span class="nav-number">1.4.</span> <span class="nav-text">使用阿里云仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从容器创建一个新的镜像"><span class="nav-number">1.5.</span> <span class="nav-text">从容器创建一个新的镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标记镜像"><span class="nav-number">1.6.</span> <span class="nav-text">标记镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保存镜像"><span class="nav-number">1.7.</span> <span class="nav-text">保存镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导入镜像"><span class="nav-number">1.8.</span> <span class="nav-text">导入镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从压缩包创建镜像"><span class="nav-number">1.9.</span> <span class="nav-text">从压缩包创建镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看镜像创建历史"><span class="nav-number">1.10.</span> <span class="nav-text">查看镜像创建历史</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看镜像元数据"><span class="nav-number">1.11.</span> <span class="nav-text">查看镜像元数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除镜像"><span class="nav-number">1.12.</span> <span class="nav-text">删除镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建镜像"><span class="nav-number">1.13.</span> <span class="nav-text">构建镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实用技巧"><span class="nav-number">1.14.</span> <span class="nav-text">实用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#删除untagged镜像"><span class="nav-number">1.14.1.</span> <span class="nav-text">删除untagged镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删掉全部镜像"><span class="nav-number">1.14.2.</span> <span class="nav-text">删掉全部镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#镜像缓存"><span class="nav-number">1.14.3.</span> <span class="nav-text">镜像缓存</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">德巍</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"dialog":{"enable":true,"hitokoto":true},"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/tororo.model.json"},"display":{"position":"right","width":174,"height":312},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>

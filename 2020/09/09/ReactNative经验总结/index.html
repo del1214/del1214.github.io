@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="什么是 ReactNativeReactNative 提供组件，可以使用 javascript 和 css 编写原生移动应用ReactNative 有平台差异性，相同组件样式不同、交互不同、api 不同ReactNative 仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持ReactNative 支持 CodePush，可以向已经发布的程序推送">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactNative 经验总结">
+<meta property="og:url" content="http://yoursite.com/2020/09/09/ReactNative经验总结/index.html">
+<meta property="og:site_name" content="德聚全的部落格">
+<meta property="og:description" content="什么是 ReactNativeReactNative 提供组件，可以使用 javascript 和 css 编写原生移动应用ReactNative 有平台差异性，相同组件样式不同、交互不同、api 不同ReactNative 仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持ReactNative 支持 CodePush，可以向已经发布的程序推送">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-09T07:40:19.014Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactNative 经验总结">
+<meta name="twitter:description" content="什么是 ReactNativeReactNative 提供组件，可以使用 javascript 和 css 编写原生移动应用ReactNative 有平台差异性，相同组件样式不同、交互不同、api 不同ReactNative 仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持ReactNative 支持 CodePush，可以向已经发布的程序推送">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/09/09/ReactNative经验总结/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ReactNative 经验总结 | 德聚全的部落格</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">德聚全的部落格</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">随便写一些开发的经验和生活的感悟</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/09/ReactNative经验总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="德巍">
+      <meta itemprop="description" content="时间是把杀猪刀">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="德聚全的部落格">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ReactNative 经验总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-09-09 14:58:32 / Modified: 15:40:19" itemprop="dateCreated datePublished" datetime="2020-09-09T14:58:32+08:00">2020-09-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="什么是-ReactNative"><a href="#什么是-ReactNative" class="headerlink" title="什么是 ReactNative"></a>什么是 ReactNative</h2><h3 id="ReactNative-提供组件，可以使用-javascript-和-css-编写原生移动应用"><a href="#ReactNative-提供组件，可以使用-javascript-和-css-编写原生移动应用" class="headerlink" title="ReactNative 提供组件，可以使用 javascript 和 css 编写原生移动应用"></a>ReactNative 提供组件，可以使用 javascript 和 css 编写原生移动应用</h3><h3 id="ReactNative-有平台差异性，相同组件样式不同、交互不同、api-不同"><a href="#ReactNative-有平台差异性，相同组件样式不同、交互不同、api-不同" class="headerlink" title="ReactNative 有平台差异性，相同组件样式不同、交互不同、api 不同"></a>ReactNative 有平台差异性，相同组件样式不同、交互不同、api 不同</h3><h3 id="ReactNative-仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持"><a href="#ReactNative-仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持" class="headerlink" title="ReactNative 仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持"></a>ReactNative 仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持</h3><h3 id="ReactNative-支持-CodePush，可以向已经发布的程序推送-js-包实现热更新"><a href="#ReactNative-支持-CodePush，可以向已经发布的程序推送-js-包实现热更新" class="headerlink" title="ReactNative 支持 CodePush，可以向已经发布的程序推送 js 包实现热更新"></a>ReactNative 支持 CodePush，可以向已经发布的程序推送 js 包实现热更新</h3><h2 id="推荐使用的库"><a href="#推荐使用的库" class="headerlink" title="推荐使用的库"></a>推荐使用的库</h2><ul>
+<li><em><a href="https://github.com/react-navigation/react-navigation" target="_blank" rel="noopener">react-navigation</a></em><br>路由导航组件，更新较快，4.x 不支持动态组件。安装这个库随之必装的是 react-native-gesture-handler，react-native-reanimated，react-navigation-stack，react-navigation-tabs</li>
+<li><p><em><a href="https://github.com/oblador/react-native-vector-icons" target="_blank" rel="noopener">react-native-vector-icons</a></em><br>图标控件</p>
+</li>
+<li><p><em><a href="https://github.com/leecade/react-native-swiper" target="_blank" rel="noopener">react-native-swiper</a></em><br>Swiper 组件</p>
+</li>
+<li><p><em><a href="https://github.com/react-native-community/react-native-webview" target="_blank" rel="noopener">react-native-webview</a></em><br>WebView 组件</p>
+</li>
+<li><p><em><a href="https://github.com/react-native-community/async-storage" target="_blank" rel="noopener">@react-native-community/async-storage</a></em><br>本地缓存组件</p>
+</li>
+<li><p><em><a href="https://github.com/react-native-community/react-native-svg" target="_blank" rel="noopener">react-native-svg</a></em><br>配合<em>react-native-svg-transformer</em>可以编写 svg 组件</p>
+</li>
+<li><p><em><a href="https://github.com/syanbo/react-native-syan-image-picker" target="_blank" rel="noopener">react-native-syan-image-picker</a></em><br>图片选择、拍照组件, 因为 react-native-file-selector 中引用的 FileBrowser 有问题，暂时弃用</p>
+</li>
+<li><p><em>axios</em><br>通信组件，RN 官方推荐的 Fetch 不支持拦截器</p>
+</li>
+<li><p><em>rn-fetch-blob</em><br>网络传输文件</p>
+</li>
+<li><p><em>jpush</em> <em>jshare</em> <em>jcore</em><br>极光推送，极光分享， 有相对详细的 react-native 集成文档</p>
+</li>
+<li><p><em><a href="https://github.com/rilyu/teaset" target="_blank" rel="noopener">teaset</a></em><br>国人写的 UI 组件</p>
+</li>
+<li><p><em>react-native-wechat</em><br>微信登录、支付、分享</p>
+</li>
+<li><p><em>react-native-audio</em><br>播放音频文件</p>
+</li>
+<li><p><em>react-native-video</em><br>播放视频文件</p>
+</li>
+<li><p><em>react-native-sound</em><br>控制音量</p>
+</li>
+<li><p><em>react-native-orientaion</em><br>控制屏幕方向</p>
+</li>
+<li><p><a href="https://github.com/ascoders/react-native-image-viewer" target="_blank" rel="noopener">react-native-image-zoom-viewer</a><br>点击图片预览、放大、手势关闭</p>
+</li>
+<li><p><a href="https://github.com/react-native-community/lottie-react-native" target="_blank" rel="noopener">lottie-react-native</a><br>播放 AE 动效</p>
+</li>
+<li><p><a href="https://github.com/jemise111/react-native-swipe-list-view" target="_blank" rel="noopener">react-native-swipe-list-view</a><br>侧滑列表</p>
+</li>
+<li><p><a href="https://github.com/mfrachet/rn-placeholder" target="_blank" rel="noopener">rn-placeholder</a><br>骨架屏</p>
+</li>
+</ul>
+<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><ul>
+<li>MAC OS 10.15</li>
+<li>Xcode11</li>
+<li>AndroidStudio 3.5<br>按照<a href="https://reactnative.cn/docs/getting-started.html" target="_blank" rel="noopener">指南</a>完成环境配置</li>
+</ul>
+<p>难点</p>
+<ul>
+<li><p>ios<br><a href="https://mirror.tuna.tsinghua.edu.cn/help/CocoaPods/" target="_blank" rel="noopener">CocoaPods</a> 的仓库国内很难访问到，可以用先下载到本地的方式完成配置</p>
+</li>
+<li><p>android<br>在 android/gradle.properties 文件中配置如下内容</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 使用代理</span><br><span class="line">systemProp.http.proxyHost=127.0.0.1</span><br><span class="line">systemProp.https.proxyHost=127.0.0.1</span><br><span class="line">systemProp.http.proxyPort=1087</span><br><span class="line">systemProp.https.proxyPort=1087</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>总之做 React Native 开发需要十分稳定的\$\$代理</p>
+</blockquote>
+<h3 id="编译问题"><a href="#编译问题" class="headerlink" title="编译问题"></a>编译问题</h3><h4 id="ios"><a href="#ios" class="headerlink" title="ios"></a>ios</h4><p>使用 CocoaPods 的项目需要在 ios 目录下执行 pod install 安装全部依赖<br>然后打开.xcworkspace 文件编译</p>
+<h4 id="android"><a href="#android" class="headerlink" title="android"></a>android</h4><p>android 打包需要下载对应版本的 gradle 和 jar 包，强烈依赖翻墙</p>
+<h3 id="依赖库"><a href="#依赖库" class="headerlink" title="依赖库"></a>依赖库</h3><h4 id="react-native-fast-image"><a href="#react-native-fast-image" class="headerlink" title="react-native-fast-image"></a>react-native-fast-image</h4><p><a href="https://github.com/DylanVann/react-native-fast-image/blob/master/docs/app-glide-module.md" target="_blank" rel="noopener">AppGlideModule 问题</a><br>在 build.gradle 中加入下面代码</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">project</span>.ext &#123;</span><br><span class="line">    excludeAppGlideModule = <span class="keyword">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="react-native-vector-icons"><a href="#react-native-vector-icons" class="headerlink" title="react-native-vector-icons"></a>react-native-vector-icons</h4><p>字体安装</p>
+<h5 id="ios-1"><a href="#ios-1" class="headerlink" title="ios"></a>ios</h5><ul>
+<li>在 Xcode 中新建 Group(新建的 Group 并不是一个真实的文件夹)，然后将字体文件拉进去</li>
+<li>在 Info.plist 文件中添加 key，Fonts provided by application</li>
+<li>上面的 key 内添加项，每项的值都是字体名字,如 Ionicons.ttf,AntDesign.ttf</li>
+</ul>
+<h5 id="android-1"><a href="#android-1" class="headerlink" title="android"></a>android</h5><p>将字体放到 app/src/main/assets/fonts 目录下</p>
+<h4 id="react-native-amap3d"><a href="#react-native-amap3d" class="headerlink" title="react-native-amap3d"></a>react-native-amap3d</h4><p><a href="http://lbsbbs.amap.com/forum.php?mod=viewthread&amp;tid=42965" target="_blank" rel="noopener">安卓模拟器蓝屏问题</a><br> <a href="https://blog.csdn.net/weixin_38202389/article/details/80782861" target="_blank" rel="noopener">解决方法</a></p>
+<h3 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h3><h4 id="ios-2"><a href="#ios-2" class="headerlink" title="ios"></a>ios</h4><p>编辑 Info.plist 加入下列内容</p>
+<figure class="highlight plist"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">key</span>&gt;</span>NSLocationWhenInUseUsageDescription<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>启用定位更加准确<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">key</span>&gt;</span>NSCameraUsageDescription<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>需要打开您的相机<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">key</span>&gt;</span>NSPhotoLibraryUsageDescription<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>需要打开您的相册<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="android-2"><a href="#android-2" class="headerlink" title="android"></a>android</h4><p>编辑 app/src/main/AndroidManifest.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_FINE_LOCATION"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.CAMERA"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>需要深入理解</p>
+</blockquote>
+<h4 id="react-native-gesture-handler"><a href="#react-native-gesture-handler" class="headerlink" title="react-native-gesture-handler"></a>react-native-gesture-handler</h4><p>TouchableOpacity 在安卓下没有 onPress 事件，因为要引用 react-native 中的同名类，自动引用总是引错</p>
+<h3 id="启动图片设置"><a href="#启动图片设置" class="headerlink" title="启动图片设置"></a>启动图片设置</h3><p><a href="https://medium.com/handlebar-labs/how-to-add-a-splash-screen-to-a-react-native-app-ios-and-android-30a3cec835ae" target="_blank" rel="noopener">点我观看</a></p>
+<h3 id="app-保持-portrait-模式"><a href="#app-保持-portrait-模式" class="headerlink" title="app 保持 portrait 模式"></a>app 保持 portrait 模式</h3><h4 id="ios-3"><a href="#ios-3" class="headerlink" title="ios"></a>ios</h4><p>Xcode 选择 TARGETS 项目,General 下的 Deployment Info 下的 DeviceOrientation 只勾选 Portrait</p>
+<h4 id="android-3"><a href="#android-3" class="headerlink" title="android"></a>android</h4><p>AndroidManifest.xml 中为 MainActivity 添加 android:screenOrientation=”portrait”</p>
+<h3 id="开源项目-example-的问题"><a href="#开源项目-example-的问题" class="headerlink" title="开源项目 example 的问题"></a>开源项目 example 的问题</h3><p>很多开源项目都带有 example 目录方便查看效果，但因为 react-native 版本更新迭代相当快，如果不满足当前 react-native 版本的基本无法运行</p>
+<h3 id="react-native-版本更迭问题"><a href="#react-native-版本更迭问题" class="headerlink" title="react-native 版本更迭问题"></a>react-native 版本更迭问题</h3><p>react-native 更新非常快，应保持项目依赖的 react-native 大版本稳定在半年至一年更新，包括 android 和 ios 项目格式的更新</p>
+<h1 id="shuttle-bus-app-passenger-端"><a href="#shuttle-bus-app-passenger-端" class="headerlink" title="shuttle_bus_app_passenger 端"></a>shuttle_bus_app_passenger 端</h1><blockquote>
+<p>班车 APP 乘客</p>
+</blockquote>
+<h2 id="运行方法"><a href="#运行方法" class="headerlink" title="运行方法"></a>运行方法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装依赖包</span></span><br><span class="line">yarn</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动jsbundle服务器</span></span><br><span class="line">yarn start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动ios端</span></span><br><span class="line"><span class="comment"># 等与 react-native run-ios</span></span><br><span class="line">yarn ios</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动android端</span></span><br><span class="line">yarn android</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清除安卓编译缓存</span></span><br><span class="line">yarn clean:android</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建安卓</span></span><br><span class="line"><span class="comment"># 构建结果在android/app/build/outputs/apk/release/中</span></span><br><span class="line">yarn build:android</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建ios</span></span><br><span class="line"><span class="comment"># 构建完成后将ios/bundle拖入xcode $&#123;project_name&#125;中</span></span><br><span class="line">yarn build:ios</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调试</span></span><br><span class="line">yarn devtool</span><br><span class="line"><span class="comment"># 先运行devtool后运行模拟器可以进行界面调试</span></span><br><span class="line"><span class="comment"># 也可以自行安装后运行</span></span><br><span class="line"><span class="comment"># npm i -g react-devtools@3.6.3</span></span><br><span class="line"><span class="comment"># 安装也许会遇到electron无法下载的问题，先用npx方式完成缓存加载之后也许可安装或者挂代理</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行测试用例</span></span><br><span class="line">yarn <span class="built_in">test</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行语法lint</span></span><br><span class="line">yarn lint</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换开发环境到STAGE环境</span></span><br><span class="line">STAGE=xxx yarn env:dev</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换打包环境到STAGE环境</span></span><br><span class="line">STAGE=xxx yarn env:stage</span><br><span class="line"></span><br><span class="line"><span class="comment"># 给bin/下所有sh执行权限</span></span><br><span class="line">yarn chmod</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用工具给项目打版本号，git不提交但会自动打tag</span></span><br><span class="line">yarn version</span><br></pre></td></tr></table></figure>
+<h2 id="终极清缓存秘籍"><a href="#终极清缓存秘籍" class="headerlink" title="终极清缓存秘籍"></a>终极清缓存秘籍</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 可以清除修改了js构建方案后之前的顽固缓存</span></span><br><span class="line">watchman watch-del-all &amp;&amp; rm -rf <span class="variable">$TMPDIR</span>/react-native-packager-cache-* &amp;&amp; rm -rf <span class="variable">$TMPDIR</span>/metro-bundler-cache-* &amp;&amp; npm cache clean --force &amp;&amp; npm start -- -- reset-cache</span><br></pre></td></tr></table></figure>
+<h2 id="react-native-splash-screen"><a href="#react-native-splash-screen" class="headerlink" title="react-native-splash-screen"></a>react-native-splash-screen</h2><p>集成后安卓闪退问题，需要配置 res 下的 xml 文件</p>
+<h2 id="安卓-keystore-生成"><a href="#安卓-keystore-生成" class="headerlink" title="安卓 keystore 生成"></a>安卓 keystore 生成</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">signingConfigs &#123;</span><br><span class="line">    release &#123;</span><br><span class="line">        storeFile <span class="keyword">file</span>(<span class="string">'./android/app/keystore'</span>)</span><br><span class="line">        storePassword <span class="string">'12345678'</span></span><br><span class="line">        keyAlias <span class="string">'passenger'</span></span><br><span class="line">        keyPassword <span class="string">'12345678'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成keystore</span></span><br><span class="line">keytool -genkey -<span class="built_in">alias</span> shuttle_bus_app_passenger -keyalg RSA -keysize 2048 -validity 36500 -keystore keystore</span><br><span class="line"><span class="comment"># 查看keystore</span></span><br><span class="line">keytool -list -v -keystore release.keystore</span><br></pre></td></tr></table></figure>
+<h2 id="react-native-wechat-集成问题"><a href="#react-native-wechat-集成问题" class="headerlink" title="react-native-wechat 集成问题"></a>react-native-wechat 集成问题</h2><blockquote>
+<p>版本 1.9.12</p>
+</blockquote>
+<h3 id="ios-4"><a href="#ios-4" class="headerlink" title="ios"></a>ios</h3><p>因为 ReactNative0.59 已经支持自动 link 不需要进行手动链结动态库进来<br>其他步骤照旧</p>
+<ul>
+<li>手动链结库（无需配置）</li>
+<li>配置 URL Types</li>
+<li>配置 Info.plist</li>
+<li>配置 AppDelegate.m</li>
+</ul>
+<h3 id="android-4"><a href="#android-4" class="headerlink" title="android"></a>android</h3><p>因为自动 link，不需要编辑 1、2 步</p>
+<ul>
+<li>配置 android/settings.gradle（无需配置）</li>
+<li>配置 android/app/build.gradle（无需配置）</li>
+<li>配置 proguard-rules.pro</li>
+<li>配置 MainApplication.java</li>
+<li>在自己的子 package 下建立 wxapi 包</li>
+<li>配置微信分享，新建 WXEntryActivity，配置 AndroidManifest.xml</li>
+<li>配置微信支付，新建 WXPayEntryActivity，配置 AndroidManifest.xml</li>
+</ul>
+<blockquote>
+<p><a href="https://github.com/little-snow-fox/react-native-wechat-lib/issues/13" target="_blank" rel="noopener">The modules [‘node_modules-react-native-wechat-lib-android-RCTWeChat’, ‘node_modules-react-native-wechat-lib-android-react-native-wechat-lib~1’] point to the same directory in the file system.<br>Each module must have a unique path.</a>不要配置上面的 1、2 步<br><a href="https://github.com/yorkie/react-native-wechat/issues/537" target="_blank" rel="noopener">安卓打包提示 WeChatModule.java:7: 错误: 程序包 android.support.annotation 不存在</a> 进入 WeChatModule 包修改文件</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//import android.support.annotation.Nullable;</span></span><br><span class="line"><span class="keyword">import</span> androidx.annotation.Nullable;</span><br></pre></td></tr></table></figure>
+<h2 id="jpush-react-native"><a href="#jpush-react-native" class="headerlink" title="jpush-react-native"></a>jpush-react-native</h2><blockquote>
+<p>jcore-react-native 1.7.5<br>jpush-react-native 2.7.5</p>
+</blockquote>
+<p>按文档完全可配置，如何调用需测试</p>
+<h2 id="自定义图标字体"><a href="#自定义图标字体" class="headerlink" title="自定义图标字体"></a>自定义图标字体</h2><p><a href="https://www.jianshu.com/p/c4dfc85d3009" target="_blank" rel="noopener">教程</a></p>
+<blockquote>
+<p>xcode 要将 icommon.ttf 拖拽到项目根路径, 在 info.plist 中添加 Fonts provided by application &gt; icomoon.ttf</p>
+</blockquote>
+<h2 id="弹窗制作"><a href="#弹窗制作" class="headerlink" title="弹窗制作"></a>弹窗制作</h2><p>方法 1: 高阶组件套壳<br>通过高阶组件在外部定义弹窗组件通过 redux state 触发渲染<br>优点：稳定<br>缺点：state 变更后会触发大面积的高阶组件重绘</p>
+<p>方法 2: 使用 react-native-root-siblings<br>优点：快，直接提供了插入到根路径的功能，方便编写<br>缺点：hack 了 AppRegistry.registerComponent 方法，不知道新版本绘有何问题。所有组件需做好退回 hoc 编写的方案上</p>
+<p>我选择快[Doge]</p>
+<h2 id="aliyun-oss-react-native"><a href="#aliyun-oss-react-native" class="headerlink" title="aliyun-oss-react-native"></a>aliyun-oss-react-native</h2><p>当前版本：1.0.0-alpha.7</p>
+<h3 id="ios-安装"><a href="#ios-安装" class="headerlink" title="ios 安装"></a>ios 安装</h3><p>ios 目录下 pod install</p>
+<h3 id="android-安装"><a href="#android-安装" class="headerlink" title="android 安装"></a>android 安装</h3><p>在 android/settings.gradle 添加代码</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span> <span class="string">':aliyun-oss-react-native'</span></span><br><span class="line"><span class="keyword">project</span>(<span class="string">':aliyun-oss-react-native'</span>).projectDir = <span class="keyword">new</span> <span class="keyword">File</span>(rootProject.projectDir, <span class="string">'../node_modules/aliyun-oss-react-native/android'</span>)</span><br></pre></td></tr></table></figure>
+<p>在 android/app/build.gradle 里增加代码</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &#123;</span><br><span class="line">    implementation <span class="keyword">project</span>(<span class="string">':aliyun-oss-react-native'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">遇到这种报错的</span><br><span class="line">```bash</span><br><span class="line">Manifest merger failed : Attribute application@allowBackup value=(<span class="keyword">false</span>) <span class="keyword">from</span> AndroidManifest.xml:<span class="number">16</span>:<span class="number">7</span>-<span class="number">34</span></span><br><span class="line">	is also present at [com.aliyun.dpa:oss-android-sdk:<span class="number">2.9</span>.<span class="number">3</span>] AndroidManifest.xml:<span class="number">18</span>:<span class="number">9</span>-<span class="number">35</span> value=(<span class="keyword">true</span>).</span><br><span class="line">	Suggestion: add <span class="string">'tools:replace="android:allowBackup"'</span> to &lt;application&gt; element at AndroidManifest.xml:<span class="number">7</span>:<span class="number">5</span>-<span class="number">117</span> to override.</span><br></pre></td></tr></table></figure>
+<p>在 AndroidManifest.xml 中添加</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">manifest</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">+   <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">package</span>=<span class="string">"com.ccbuluo.shuttle_bus_app_passenger"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">".MainApplication"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:roundIcon</span>=<span class="string">"@mipmap/ic_launcher_round"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:allowBackup</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:theme</span>=<span class="string">"@style/AppTheme"</span></span></span><br><span class="line"><span class="tag">+   <span class="attr">tools:replace</span>=<span class="string">"android:allowBackup"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/aliyun/aliyun-oss-react-native/issues/49" target="_blank" rel="noopener">./gradlew assembleRelease 失败 #49</a><br>Execution failed for task ‘:aliyun-oss-react-native:verifyReleaseResources’.</p>
+<p>修改</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xmlns:tools="http://schemas.android.com/tools"&gt;</span><br><span class="line">    tools:replace="android:allowBackup"</span><br><span class="line">    android:allowBackup="true"</span><br></pre></td></tr></table></figure>
+<p>修改 node_modules/aliyun-oss-react-native/android/build.gradle</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    &lt;!-- 改成和自己的版本一致 --&gt;</span><br><span class="line">    compileSdkVersion <span class="number">28</span></span><br><span class="line">    buildToolsVersion <span class="string">'28.0.3'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Lottie"><a href="#Lottie" class="headerlink" title="Lottie"></a>Lottie</h2><h3 id="android-5"><a href="#android-5" class="headerlink" title="android"></a>android</h3><p>lottie 中带图片的需要在安卓对应目录下拷贝资源文件到[PROJECT FOLDER]/android/app/src/main/assets，在 react prop 中对应其子目录 imageAssetsFolder={‘lottie/animation_1’}</p>
+<h3 id="ios-5"><a href="#ios-5" class="headerlink" title="ios"></a>ios</h3><p>在 Xcode 中左侧文件夹右键 “Add file to [Project]” 将文件添加进去重新编译即可</p>
+<blockquote>
+<p>文件名需和 json 中的文件一致</p>
+</blockquote>
+<h2 id="编译打包"><a href="#编译打包" class="headerlink" title="编译打包"></a>编译打包</h2><h3 id="android-6"><a href="#android-6" class="headerlink" title="android"></a>android</h3><p>安卓虚拟机堆栈爆满问题<br>Expiring Daemon because JVM heap space is exhausted</p>
+<p>在 android/app/build.gradle 中添加</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    dexOptions &#123;</span><br><span class="line">       javaMaxHeapSize <span class="string">"3g"</span></span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 android/gradle.properties 中添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">org.gradle.daemon=true</span><br><span class="line">org.gradle.jvmargs=-Xmx2560m</span><br></pre></td></tr></table></figure>
+<!-- 安卓真机调试 -->
+<p>adb logcat AndroidRuntime:E *:S</p>
+<p>手机插上线，打开 Android Studio logcat 面板 过滤 I/ReactNativeJS 级别 debug</p>
+<p>启动图标</p>
+<p>安卓启动图（内容尽量靠中间）<br>2560*1440<br>安卓图标<br>圆形，圆角<br>192x192<br>144x144<br>96x96<br>72x72<br>48x48</p>
+<p>ios</p>
+<h3 id="ios-xcode-升级带来的问题"><a href="#ios-xcode-升级带来的问题" class="headerlink" title="ios xcode 升级带来的问题"></a>ios xcode 升级带来的问题</h3><h4 id="Module-compiled-with-Swift-5-1-3-cannot-be-imported-by-the-Swift-5-2-compiler"><a href="#Module-compiled-with-Swift-5-1-3-cannot-be-imported-by-the-Swift-5-2-compiler" class="headerlink" title="Module compiled with Swift 5.1.3 cannot be imported by the Swift 5.2 compiler"></a>Module compiled with Swift 5.1.3 cannot be imported by the Swift 5.2 compiler</h4><p>这个问题是因为升级了新的编译器，之前已经用旧编译器生成过结果需要进入/Users/\${username}/Library/Developer/Xcode/DerivedData 将数据清除</p>
+<p>也可以清除 Pods/目录，重新 pod install 一下</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/09/2020多半年总结/" rel="next" title="2020多半年总结">
+                <i class="fa fa-chevron-left"></i> 2020多半年总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/10/10/sshpass/" rel="prev" title="懒人实现一键上传">
+                懒人实现一键上传 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="德巍" />
+            
+              <p class="site-author-name" itemprop="name">德巍</p>
+              <p class="site-description motion-element" itemprop="description">时间是把杀猪刀</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">32</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/del1214" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.v2ex.com/member/del1214" target="_blank" title="V2ex"><i class="fa fa-fw fa-globe"></i>V2ex</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://segmentfault.com/u/del1214" target="_blank" title="SegmentFault"><i class="fa fa-fw fa-globe"></i>SegmentFault</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/de-wei-3" target="_blank" title="Zhihu"><i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://space.bilibili.com/4830148/#/" target="_blank" title="bilibili"><i class="fa fa-fw fa-globe"></i>bilibili</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-ReactNative"><span class="nav-number">1.</span> <span class="nav-text">什么是 ReactNative</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReactNative-提供组件，可以使用-javascript-和-css-编写原生移动应用"><span class="nav-number">1.1.</span> <span class="nav-text">ReactNative 提供组件，可以使用 javascript 和 css 编写原生移动应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReactNative-有平台差异性，相同组件样式不同、交互不同、api-不同"><span class="nav-number">1.2.</span> <span class="nav-text">ReactNative 有平台差异性，相同组件样式不同、交互不同、api 不同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReactNative-仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持"><span class="nav-number">1.3.</span> <span class="nav-text">ReactNative 仅仅是绘制界面，绝大部分功能（地图、音乐、视频、文件处理、社会化分享、支付）都需要依赖原生程序的支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReactNative-支持-CodePush，可以向已经发布的程序推送-js-包实现热更新"><span class="nav-number">1.4.</span> <span class="nav-text">ReactNative 支持 CodePush，可以向已经发布的程序推送 js 包实现热更新</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐使用的库"><span class="nav-number">2.</span> <span class="nav-text">推荐使用的库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境配置"><span class="nav-number">3.</span> <span class="nav-text">环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译问题"><span class="nav-number">3.1.</span> <span class="nav-text">编译问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ios"><span class="nav-number">3.1.1.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android"><span class="nav-number">3.1.2.</span> <span class="nav-text">android</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖库"><span class="nav-number">3.2.</span> <span class="nav-text">依赖库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#react-native-fast-image"><span class="nav-number">3.2.1.</span> <span class="nav-text">react-native-fast-image</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#react-native-vector-icons"><span class="nav-number">3.2.2.</span> <span class="nav-text">react-native-vector-icons</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ios-1"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#android-1"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">android</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#react-native-amap3d"><span class="nav-number">3.2.3.</span> <span class="nav-text">react-native-amap3d</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#权限"><span class="nav-number">3.3.</span> <span class="nav-text">权限</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ios-2"><span class="nav-number">3.3.1.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-2"><span class="nav-number">3.3.2.</span> <span class="nav-text">android</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#react-native-gesture-handler"><span class="nav-number">3.3.3.</span> <span class="nav-text">react-native-gesture-handler</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动图片设置"><span class="nav-number">3.4.</span> <span class="nav-text">启动图片设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#app-保持-portrait-模式"><span class="nav-number">3.5.</span> <span class="nav-text">app 保持 portrait 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ios-3"><span class="nav-number">3.5.1.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-3"><span class="nav-number">3.5.2.</span> <span class="nav-text">android</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开源项目-example-的问题"><span class="nav-number">3.6.</span> <span class="nav-text">开源项目 example 的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#react-native-版本更迭问题"><span class="nav-number">3.7.</span> <span class="nav-text">react-native 版本更迭问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shuttle-bus-app-passenger-端"><span class="nav-number"></span> <span class="nav-text">shuttle_bus_app_passenger 端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行方法"><span class="nav-number">1.</span> <span class="nav-text">运行方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#终极清缓存秘籍"><span class="nav-number">2.</span> <span class="nav-text">终极清缓存秘籍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#react-native-splash-screen"><span class="nav-number">3.</span> <span class="nav-text">react-native-splash-screen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安卓-keystore-生成"><span class="nav-number">4.</span> <span class="nav-text">安卓 keystore 生成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#react-native-wechat-集成问题"><span class="nav-number">5.</span> <span class="nav-text">react-native-wechat 集成问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ios-4"><span class="nav-number">5.1.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#android-4"><span class="nav-number">5.2.</span> <span class="nav-text">android</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jpush-react-native"><span class="nav-number">6.</span> <span class="nav-text">jpush-react-native</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义图标字体"><span class="nav-number">7.</span> <span class="nav-text">自定义图标字体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弹窗制作"><span class="nav-number">8.</span> <span class="nav-text">弹窗制作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#aliyun-oss-react-native"><span class="nav-number">9.</span> <span class="nav-text">aliyun-oss-react-native</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ios-安装"><span class="nav-number">9.1.</span> <span class="nav-text">ios 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#android-安装"><span class="nav-number">9.2.</span> <span class="nav-text">android 安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lottie"><span class="nav-number">10.</span> <span class="nav-text">Lottie</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#android-5"><span class="nav-number">10.1.</span> <span class="nav-text">android</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ios-5"><span class="nav-number">10.2.</span> <span class="nav-text">ios</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译打包"><span class="nav-number">11.</span> <span class="nav-text">编译打包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#android-6"><span class="nav-number">11.1.</span> <span class="nav-text">android</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ios-xcode-升级带来的问题"><span class="nav-number">11.2.</span> <span class="nav-text">ios xcode 升级带来的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Module-compiled-with-Swift-5-1-3-cannot-be-imported-by-the-Swift-5-2-compiler"><span class="nav-number">11.2.1.</span> <span class="nav-text">Module compiled with Swift 5.1.3 cannot be imported by the Swift 5.2 compiler</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">德巍</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"dialog":{"enable":true,"hitokoto":true},"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/tororo.model.json"},"display":{"position":"right","width":174,"height":312},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>
